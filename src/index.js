@@ -7,4 +7,7 @@ import "./index.css";
 
 import "./semantic-dist/semantic.min.css";
 
-ReactDOM.render(<App />, document.getElementById("root"));
+ReactDOM.render(
+  <App />,
+  document.getElementById("root")
+);
