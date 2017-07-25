@@ -1,3 +1,5 @@
+import React, { Component } from 'react'
+
 // PRIMARY CODE //
 // We will pass in intialState when we initialize the store
 function createStore(reducer, initialState) {
@@ -54,33 +56,87 @@ const initialState = { messages: [] };
 // instantiate a Store object made by createStore()
 const store = createStore(reducer, initialState);
 
-//  our callback function, prints the current state to the console
-const listener = () => {
-  console.log('Current state: ');
-  console.log(store.getState());
+
+class App extends Component {
+  componentDidMount() {
+    store.subscribe(() => this.forceUpdate())
+  }
+
+  render() {
+    const messages = store.getState().messages;
+
+    return (
+      <div className='ui segment'>
+        <MessageView messages={messages} />
+        <MessageInput />
+      </div>
+    );
+  }
+}
+
+class MessageInput extends Component {
+  state = {
+    value: '',
+  };
+  onChange = (e) => {
+    this.setState({
+      value: e.target.value,
+    })
+  }
+
+  handleSubmit = () => {
+    store.dispatch({
+      type: 'ADD_MESSAGE',
+      message: this.state.value,
+    });
+    this.setState({
+      value: '',
+    });
+  };
+
+  render() {
+    return (
+      <div className='ui input'>
+        <input onChange={this.onChange} value={this.state.value} type='text'/>
+        <button
+          onClick={this.handleSubmit}
+          className='ui primary button'
+          type='submit'
+          >
+            Submit
+        </button>
+      </div>
+    );
+  }
 };
 
-// Add a listener to the Store with our subcribe method
-store.subscribe(listener);
+class MessageView extends Component {
+  handleClick = (index) => {
+    store.dispatch({
+      type: 'DELETE_MESSAGE',
+      index: index,
+    });
+  };
 
-//  Actions and their dipatch(es)
-const addMessageAction1 = {
-  type: 'ADD_MESSAGE',
-  message: 'How do you read?',
-};
-store.dispatch(addMessageAction1);
-    // -> `listener()` is called
+  render() {
+    const messages = this.props.messages.map((message, index) => (
+      //  great format when you want each child to be wrapped in its own div
+      <div
+        className='comment'
+        key={index}
+        onClick={() => this.handleClick(index)}
+      >
+        {message}
+      </div>
+    ));
 
-const addMessageAction2 = {
-  type: 'ADD_MESSAGE',
-  message: 'I read you loud and clear, Houston.',
-};
-store.dispatch(addMessageAction2);
-    // -> `listener()` is called
+    return (
+      <div className='ui comments'>
+        {messages}
+      </div>
+    );
+  }
+}
 
-const deleteMessageAction = {
-  type: 'DELETE_MESSAGE',
-  index: 0,
-};
-store.dispatch(deleteMessageAction);
-    // -> `listener()` is called
+
+export default App
