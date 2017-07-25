@@ -54,7 +54,7 @@ const initialState = { messages: [] };
 // instantiate a Store object made by createStore()
 const store = createStore(reducer, initialState);
 
-//  prints the current state to the console
+//  our callback function, prints the current state to the console
 const listener = () => {
   console.log('Current state: ');
   console.log(store.getState());
